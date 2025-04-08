@@ -100,6 +100,7 @@ const StatusBadge = styled('div')(({ status }: { status: keyof typeof statusColo
 }));
 
 import { Character } from '../types'; 
+import LanguageSwitcher from './LanguageSwitcher';
 
 const CardContent = memo(({ character }: { character: Character }) => {
   const { t } = useTranslation();
@@ -220,8 +221,10 @@ export default function CharacterList() {
   return (
     <GradientBackground>
       <div className="max-w-7xl mx-auto">
-         {/*TITLE & SUBTITLE SECTION*/}
-          <Header/>
+            <div style={{ position: 'absolute', top: '1rem', right: '1rem' }}>
+            <LanguageSwitcher />
+            </div>
+            <Header/>
 
         {/* Filters and Sorting */}
         <Box

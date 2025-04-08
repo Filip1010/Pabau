@@ -5,7 +5,7 @@ export default function LanguageSwitcher() {
   return (
     <select 
       onChange={(e) => i18n.changeLanguage(e.target.value)}
-      className="absolute bottom-4 right-4 p-2 border rounded"
+      className="absolute top-4 right-4 p-2 border rounded"
     >
       <option value="en">English</option>
       <option value="de">Deutsch</option>
