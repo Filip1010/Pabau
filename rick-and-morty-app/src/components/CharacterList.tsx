@@ -30,7 +30,8 @@ const GradientBackground = styled('div')({
   background: 'linear-gradient(90deg, rgba(2,0,36,1) 0%, rgba(97,29,158,1) 100%, rgba(0,212,255,1) 100%)',
   minHeight: '100vh',
   padding: '2rem',
-  color: '#ffffff'
+  color: '#ffffff',
+  position: 'relative', // To position the language selector at the bottom-right
 });
 
 // Grid container for cards with spacing
@@ -61,11 +62,11 @@ const Card = styled(motion.div)({
 
 // Styled Button for Sort Buttons
 const StyledButton = styled(Button)(({ variant }) => ({
-  backgroundColor: variant === 'contained' ? '#9c27b0' : 'transparent', // Vibrant purple for active
+  backgroundColor: variant === 'contained' ? '#9c27b0' : 'transparent',
   color: '#ffffff',
-  borderColor: '#ce93d8', // Light purple border for inactive
+  borderColor: '#ce93d8',
   '&:hover': {
-    backgroundColor: variant === 'contained' ? '#7b1fa2' : '#ce93d8', // Darker purple on hover for active, light purple for inactive
+    backgroundColor: variant === 'contained' ? '#7b1fa2' : '#ce93d8',
     borderColor: '#ce93d8',
   },
   transition: 'all 0.3s ease',
@@ -140,19 +141,7 @@ export default function CharacterList() {
     <GradientBackground>
       <div className="max-w-7xl mx-auto">
         {/* Header Section */}
-        <div className="relative mb-8 flex flex-col items-center">
-          <div className="absolute right-0 top-0 flex items-center gap-2 bg-white/10 p-2 rounded-lg">
-            <LanguageIcon className="text-purple-200" />
-            <select
-              value={i18n.language}
-              onChange={(e) => i18n.changeLanguage(e.target.value)}
-              className="bg-transparent text-purple-100 border-none focus:ring-0"
-            >
-              <option value="en">English</option>
-              <option value="de">Deutsch</option>
-            </select>
-          </div>
-
+        <div className="mb-8 flex flex-col items-center">
           <motion.div
             initial={{ opacity: 0, y: -20 }}
             animate={{ opacity: 1, y: 0 }}
@@ -173,9 +162,9 @@ export default function CharacterList() {
             justifyContent: 'left',
             alignItems: 'center',
             gap: '1.0rem',
-            flexWrap: 'wrap', // Allow wrapping on very small screens
+            flexWrap: 'wrap',
             marginBottom: '0.3rem',
-            padding: '3.5rem',
+            padding: '1.8rem',
             color: '#fff',
           }}
         >
@@ -287,6 +276,19 @@ export default function CharacterList() {
               <div className="text-purple-300">{t('loading')}</div>
             </div>
           )}
+        </div>
+
+        {/* Language Selector - Bottom Right */}
+        <div className="absolute bottom-4 right-4 flex items-center gap-2 bg-white/10 p-2 rounded-lg">
+          <LanguageIcon className="text-purple-200" />
+          <select
+            value={i18n.language}
+            onChange={(e) => i18n.changeLanguage(e.target.value)}
+            className="bg-transparent text-purple-100 border-none focus:ring-0"
+          >
+            <option value="en">English</option>
+            <option value="de">Deutsch</option>
+          </select>
         </div>
       </div>
     </GradientBackground>
