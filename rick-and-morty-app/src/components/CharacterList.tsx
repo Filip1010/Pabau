@@ -1,8 +1,9 @@
-import { useState, useEffect, useMemo, memo, useCallback } from 'react';
+import React, { useState, useEffect, useMemo, memo, useCallback } from 'react';
 import { useQuery } from '@apollo/client';
 import { useInView } from 'react-intersection-observer';
 import { GET_CHARACTERS } from '../queries/characters';
 import { CharactersData, CharactersVars } from '../types';
+import Header from './Header';
 import {
   Person as PersonIcon,
   Female as FemaleIcon,
@@ -10,7 +11,6 @@ import {
   Transgender as TransgenderIcon,
   Public as GlobeIcon,
   Help as UnknownIcon,
-  Translate as LanguageIcon,
 } from '@mui/icons-material';
 import {
   Button,
@@ -38,6 +38,7 @@ const CardsGrid = styled('div')({
   gridTemplateColumns: 'repeat(auto-fill, minmax(350px, 1fr))',
   gap: '2.7rem',
   padding: '1.5rem',
+  width: '100%',              // Ensure it takes full width
 });
 
 const Card = styled(motion.div)({
@@ -98,7 +99,7 @@ const StatusBadge = styled('div')(({ status }: { status: keyof typeof statusColo
   fontWeight: 'bold',
 }));
 
-import { Character } from '../types'; // Ensure this type is defined in your types file
+import { Character } from '../types'; 
 
 const CardContent = memo(({ character }: { character: Character }) => {
   const { t } = useTranslation();
@@ -141,7 +142,7 @@ const CardComponent = memo(({ character }: { character: Character }) => (
 ));
 
 export default function CharacterList() {
-  const { t, i18n } = useTranslation();
+  const { t } = useTranslation();
   const [filters, setFilters] = useState({ status: '', species: '' });
   const [sortBy, setSortBy] = useState<'name' | 'origin'>('name');
   const [page, setPage] = useState(1);
@@ -219,32 +220,8 @@ export default function CharacterList() {
   return (
     <GradientBackground>
       <div className="max-w-7xl mx-auto">
-        {/* Header and Language Selector */}
-        <div className="relative mb-8 flex items-center justify-center flex-col">
-          <div className="absolute top-4 right-4 flex items-center gap-2 bg-white/10 p-2 rounded-lg">
-            <LanguageIcon className="text-purple-200" />
-            <select
-              value={i18n.language}
-              onChange={(e) => i18n.changeLanguage(e.target.value)}
-              className="bg-transparent text-purple-100 border-none focus:ring-0"
-            >
-              <option value="en">English</option>
-              <option value="de">Deutsch</option>
-            </select>
-          </div>
-
-          <motion.div
-            initial={{ opacity: 0, y: -20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6 }}
-            className="text-center flex flex-col items-center"
-          >
-            <h1 className="text-4xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-purple-300 to-pink-400">
-              {t('title')}
-            </h1>
-            <p className="text-purple-200 mt-2">{t('subtitle')}</p>
-          </motion.div>
-        </div>
+         {/*TITLE & SUBTITLE SECTION*/}
+          <Header/>
 
         {/* Filters and Sorting */}
         <Box
@@ -272,8 +249,7 @@ export default function CharacterList() {
               <MenuItem value="unknown">Unknown</MenuItem>
             </Select>
           </FormControl>
-
-          <FormControl variant="filled" size="small" sx={{ minWidth: 120, backgroundColor: alpha('#fff', 0.1) }}>
+           <FormControl variant="filled" size="small" sx={{ minWidth: 120, backgroundColor: alpha('#fff', 0.1) }}>
             <InputLabel sx={{ color: '#fff' }}>Species</InputLabel>
             <Select
               value={filters.species}
