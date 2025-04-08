@@ -247,40 +247,40 @@ export default function CharacterList() {
               >
                 <div style={{ position: 'relative' }}>
                   <div
-                    style={{
-                      position: 'absolute',
-                      top: '10px',
-                      left: '10px',
-                      width: '60px',
-                      height: '60px',
-                      borderRadius: '50%',
-                      backgroundColor: statusColors[character.status as keyof typeof statusColors],
-                      display: 'flex',
-                      alignItems: 'center',
-                      justifyContent: 'center',
-                      color: 'white',
-                      fontSize: '12px',
-                      fontWeight: 'bold',
-                    }}
+                  style={{
+                    position: 'absolute',
+                    top: '10px',
+                    left: '10px',
+                    width: '60px',
+                    height: '60px',
+                    borderRadius: '50%',
+                    backgroundColor: statusColors[character.status as keyof typeof statusColors],
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    color: 'white',
+                    fontSize: '12px',
+                    fontWeight: 'bold',
+                  }}
                   >
-                    {t(`status.${character.status.toLowerCase()}`)}
+                  {t(`status.${character.status.toLowerCase()}`)}
                   </div>
                   <div style={{ paddingLeft: '80px', paddingTop: '10px' }}>
-                    <h3 className="text-lg font-bold mb-1">{character.name}</h3>
-                    <div className="space-y-1 text-sm">
-                      <div>
-                        <PersonIcon fontSize="small" className="mr-1" />
-                        {t('character.species')}: {character.species}
-                      </div>
-                      <div>
-                        <GenderIcon gender={character.gender} />
-                        {t('character.gender')}: {t(`gender.${character.gender.toLowerCase()}`)}
-                      </div>
-                      <div>
-                        <GlobeIcon fontSize="small" className="mr-1" />
-                        {t('character.origin')}: {character.origin.name}
-                      </div>
+                  <h3 className="text-lg font-bold mb-1">{character.name}</h3>
+                  <div className="space-y-1 text-sm">
+                    <div style={{ display: 'flex', alignItems: 'center' }}>
+                    <PersonIcon fontSize="small" className="mr-1" />
+                    <span>- {t('character.species')}: {character.species}</span>
                     </div>
+                    <div style={{ display: 'flex', alignItems: 'center' }}>
+                    <GenderIcon gender={character.gender} />
+                    <span>- {t('character.gender')}: {t(`gender.${character.gender.toLowerCase()}`)}</span>
+                    </div>
+                    <div style={{ display: 'flex', alignItems: 'center' }}>
+                    <GlobeIcon fontSize="small" className="mr-1" />
+                    <span>- {t('character.origin')}: {character.origin.name}</span>
+                    </div>
+                  </div>
                   </div>
                 </div>
               </Card>
