@@ -16,6 +16,7 @@
     "@heroicons/react": "^2.2.0",
     "@mui/icons-material": "^7.0.1",
     "@mui/material": "^7.0.1",
+    "@mui/system": "^7.0.1",
     "framer-motion": "^12.6.3",
     "graphql": "^16.10.0",
     "react": "^19.0.0",

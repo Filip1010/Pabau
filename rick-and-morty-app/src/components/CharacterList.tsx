@@ -3,43 +3,72 @@ import { useQuery } from '@apollo/client';
 import { useInView } from 'react-intersection-observer';
 import { GET_CHARACTERS } from '../queries/characters';
 import { CharactersData, CharactersVars } from '../types';
-import { 
+import {
   Person as PersonIcon,
   Female as FemaleIcon,
   Male as MaleIcon,
   Transgender as TransgenderIcon,
   Public as GlobeIcon,
-  Favorite as HeartIcon,
   Help as UnknownIcon,
-  FilterAlt as FilterIcon,
-  Sort as SortIcon,
   Translate as LanguageIcon
 } from '@mui/icons-material';
+import {
+  Button,
+  ButtonGroup,
+  Select,
+  MenuItem,
+  FormControl,
+  InputLabel,
+  Box
+} from '@mui/material';
 import { motion, AnimatePresence } from 'framer-motion';
 import { alpha, styled } from '@mui/system';
 import { useTranslation } from 'react-i18next';
 
+// Gradient background for the entire page
 const GradientBackground = styled('div')({
-  background: 'linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%)',
+  background: 'linear-gradient(90deg, rgba(2,0,36,1) 0%, rgba(97,29,158,1) 100%, rgba(0,212,255,1) 100%)',
   minHeight: '100vh',
   padding: '2rem',
-  color: '#ffffff' // Ensure text is visible
+  color: '#ffffff'
 });
 
-const Card = styled(motion.div)(({ theme }) => ({
-  background: alpha('#fff', 0.08),
-  backdropFilter: 'blur(10px)',
+// Grid container for cards with spacing
+const CardsGrid = styled('div')({
+  display: 'grid',
+  gridTemplateColumns: 'repeat(auto-fill, minmax(250px, 1fr))',
+  gap: '2.7rem',
+  padding: '1.5rem',
+});
+
+// Styled card component
+const Card = styled(motion.div)({
+  background: alpha('#fff', 0.06),
+  backdropFilter: 'blur(8px)',
   borderRadius: '16px',
   border: '1px solid',
   borderColor: alpha('#9c27b0', 0.3),
-  overflow: 'hidden',
+  color: '#ffffff',
+  padding: '1rem',
+  width: '100%',
   transition: 'all 0.3s ease',
-  color: '#ffffff', // Explicit text color
   '&:hover': {
-    transform: 'translateY(-5px)',
-    boxShadow: '0 10px 25px rgba(156, 39, 176, 0.3)',
-    borderColor: alpha('#9c27b0', 0.6)
-  }
+    transform: 'scale(1.03)',
+    boxShadow: '0 8px 20px rgba(156, 39, 176, 0.3)',
+    borderColor: alpha('#9c27b0', 0.6),
+  },
+});
+
+// Styled Button for Sort Buttons
+const StyledButton = styled(Button)(({ variant }) => ({
+  backgroundColor: variant === 'contained' ? '#9c27b0' : 'transparent', // Vibrant purple for active
+  color: '#ffffff',
+  borderColor: '#ce93d8', // Light purple border for inactive
+  '&:hover': {
+    backgroundColor: variant === 'contained' ? '#7b1fa2' : '#ce93d8', // Darker purple on hover for active, light purple for inactive
+    borderColor: '#ce93d8',
+  },
+  transition: 'all 0.3s ease',
 }));
 
 const statusColors = {
@@ -71,7 +100,7 @@ export default function CharacterList() {
 
   useEffect(() => {
     if (inView && data?.characters.info?.next) {
-      fetchMore({ 
+      fetchMore({
         variables: { page: page + 1 },
         updateQuery: (prev, { fetchMoreResult }) => {
           if (!fetchMoreResult) return prev;
@@ -87,26 +116,21 @@ export default function CharacterList() {
     }
   }, [inView, data?.characters.info?.next, fetchMore, page]);
 
-  const sortedCharacters = [...(data?.characters.results || [])].sort((a, b) => 
-    sortBy === 'name' 
-      ? a.name.localeCompare(b.name) 
+  const sortedCharacters = [...(data?.characters.results || [])].sort((a, b) =>
+    sortBy === 'name'
+      ? a.name.localeCompare(b.name)
       : a.origin.name.localeCompare(b.origin.name)
   );
 
   if (loading && !data) return (
     <GradientBackground className="flex items-center justify-center">
-      <motion.div
-        animate={{ rotate: 360 }}
-        transition={{ duration: 1, repeat: Infinity, ease: "linear" }}
-      >
-        <HeartIcon sx={{ fontSize: 60, color: '#9c27b0' }} />
-      </motion.div>
+      <div className="text-purple-200 animate-pulse">Loading...</div>
     </GradientBackground>
   );
 
   if (error) return (
     <GradientBackground className="flex items-center justify-center">
-      <div className="text-white text-center p-6 bg-red-500/20 rounded-xl">
+      <div className="text-red-400 bg-red-500/10 p-4 rounded-lg">
         {t('error')}: {error.message}
       </div>
     </GradientBackground>
@@ -115,22 +139,9 @@ export default function CharacterList() {
   return (
     <GradientBackground>
       <div className="max-w-7xl mx-auto">
-        {/* Header with language selector */}
-        <div className="flex justify-between items-center mb-8">
-          <motion.div
-            initial={{ opacity: 0, y: -20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.5 }}
-            className="text-center"
-          >
-            <h1 className="text-4xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-purple-400 to-pink-600">
-              {t('title')}
-            </h1>
-            <p className="text-purple-200 mt-2">{t('subtitle')}</p>
-          </motion.div>
-          
-          {/* Language Selector */}
-          <div className="flex items-center gap-2 bg-white/10 p-2 rounded-lg">
+        {/* Header Section */}
+        <div className="relative mb-8 flex flex-col items-center">
+          <div className="absolute right-0 top-0 flex items-center gap-2 bg-white/10 p-2 rounded-lg">
             <LanguageIcon className="text-purple-200" />
             <select
               value={i18n.language}
@@ -139,165 +150,141 @@ export default function CharacterList() {
             >
               <option value="en">English</option>
               <option value="de">Deutsch</option>
-              <option value="es">Español</option>
             </select>
           </div>
+
+          <motion.div
+            initial={{ opacity: 0, y: -20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6 }}
+            className="text-center"
+          >
+            <h1 className="text-4xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-purple-300 to-pink-400">
+              {t('title')}
+            </h1>
+            <p className="text-purple-200 mt-2">{t('subtitle')}</p>
+          </motion.div>
         </div>
 
-        {/* Filter/Sort Section */}
-        <motion.div
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ delay: 0.2 }}
-          className="bg-white/10 backdrop-blur-lg p-6 rounded-xl border border-purple-500/30 mb-8 shadow-lg"
+        {/* Filter + Sort */}
+        <Box
+          sx={{
+            display: 'flex',
+            justifyContent: 'left',
+            alignItems: 'center',
+            gap: '1.0rem',
+            flexWrap: 'wrap', // Allow wrapping on very small screens
+            marginBottom: '0.3rem',
+            padding: '3.5rem',
+            color: '#fff',
+          }}
         >
-          <div className="flex items-center gap-2 mb-4">
-            <FilterIcon className="text-purple-200" />
-            <h2 className="text-xl font-semibold text-purple-100">
-              {t('filters.title')}
-            </h2>
-          </div>
-          
-          <div className="flex flex-col sm:flex-row gap-4">
-            {/* Status Filter */}
-            <div className="flex-1">
-              <label htmlFor="status-filter" className="block text-sm font-medium text-purple-200 mb-1 flex items-center gap-1">
-                <FilterIcon fontSize="small" /> {t('filters.status')}
-              </label>
-              <select
-                id="status-filter"
-                value={filters.status}
-                onChange={(e) => setFilters({...filters, status: e.target.value})}
-                className="w-full rounded-lg bg-gray-900/50 border border-purple-500/30 text-purple-100 px-3 py-2 focus:ring-2 focus:ring-purple-500 focus:border-transparent"
-              >
-                <option value="">{t('filters.allStatuses')}</option>
-                <option value="alive">{t('status.alive')}</option>
-                <option value="dead">{t('status.dead')}</option>
-                <option value="unknown">{t('status.unknown')}</option>
-              </select>
-            </div>
+          <FormControl variant="filled" size="small" sx={{ minWidth: 100, backgroundColor: alpha('#fff', 0.1) }}>
+            <InputLabel sx={{ color: '#fff' }}>Status</InputLabel>
+            <Select
+              value={filters.status}
+              onChange={(e) => setFilters((prev) => ({ ...prev, status: e.target.value }))}
+              sx={{ color: '#fff', '& .MuiSvgIcon-root': { color: '#fff' } }}
+            >
+              <MenuItem value="">All</MenuItem>
+              <MenuItem value="Alive">Alive</MenuItem>
+              <MenuItem value="Dead">Dead</MenuItem>
+              <MenuItem value="unknown">Unknown</MenuItem>
+            </Select>
+          </FormControl>
 
-            {/* Species Filter */}
-            <div className="flex-1">
-              <label htmlFor="species-filter" className="block text-sm font-medium text-purple-200 mb-1 flex items-center gap-1">
-                <FilterIcon fontSize="small" /> {t('filters.species')}
-              </label>
-              <input
-                id="species-filter"
-                type="text"
-                placeholder={t('filters.speciesPlaceholder')}
-                value={filters.species}
-                onChange={(e) => setFilters({...filters, species: e.target.value})}
-                className="w-full rounded-lg bg-gray-900/50 border border-purple-500/30 text-purple-100 px-3 py-2 focus:ring-2 focus:ring-purple-500 focus:border-transparent"
-              />
-            </div>
-          </div>
+          <FormControl variant="filled" size="small" sx={{ minWidth: 120, backgroundColor: alpha('#fff', 0.1) }}>
+            <InputLabel sx={{ color: '#fff' }}>Species</InputLabel>
+            <Select
+              value={filters.species}
+              onChange={(e) => setFilters((prev) => ({ ...prev, species: e.target.value }))}
+              sx={{ color: '#fff', '& .MuiSvgIcon-root': { color: '#fff' } }}
+            >
+              <MenuItem value="">All</MenuItem>
+              <MenuItem value="Human">Human</MenuItem>
+              <MenuItem value="Alien">Alien</MenuItem>
+              <MenuItem value="Robot">Robot</MenuItem>
+            </Select>
+          </FormControl>
 
-          {/* Sorting Controls */}
-          <div className="mt-4">
-            <label className="block text-sm font-medium text-purple-200 mb-2 flex items-center gap-1">
-              <SortIcon fontSize="small" /> {t('sorting.title')}
-            </label>
-            <div className="flex gap-2">
-              <motion.button 
-                whileHover={{ scale: 1.05 }}
-                whileTap={{ scale: 0.95 }}
-                onClick={() => setSortBy('name')}
-                className={`px-4 py-2 rounded-lg text-sm font-medium transition-all flex items-center gap-1 ${
-                  sortBy === 'name' 
-                    ? 'bg-purple-600 text-white shadow-lg' 
-                    : 'bg-gray-900/50 text-purple-100 hover:bg-gray-800/70'
-                }`}
-              >
-                <SortIcon fontSize="small" />
-                {t('sorting.name')} {sortBy === 'name' && '↓'}
-              </motion.button>
-              <motion.button 
-                whileHover={{ scale: 1.05 }}
-                whileTap={{ scale: 0.95 }}
-                onClick={() => setSortBy('origin')}
-                className={`px-4 py-2 rounded-lg text-sm font-medium transition-all flex items-center gap-1 ${
-                  sortBy === 'origin' 
-                    ? 'bg-purple-600 text-white shadow-lg' 
-                    : 'bg-gray-900/50 text-purple-100 hover:bg-gray-800/70'
-                }`}
-              >
-                <SortIcon fontSize="small" />
-                {t('sorting.origin')} {sortBy === 'origin' && '↓'}
-              </motion.button>
-            </div>
-          </div>
-        </motion.div>
+          <ButtonGroup>
+            <StyledButton
+              onClick={() => setSortBy('name')}
+              variant={sortBy === 'name' ? 'contained' : 'outlined'}
+            >
+              Sort by Name
+            </StyledButton>
+            <StyledButton
+              onClick={() => setSortBy('origin')}
+              variant={sortBy === 'origin' ? 'contained' : 'outlined'}
+            >
+              Sort by Origin
+            </StyledButton>
+          </ButtonGroup>
+        </Box>
 
-        {/* Character Grid */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+        {/* Cards - Responsive Grid */}
+        <CardsGrid>
           <AnimatePresence>
             {sortedCharacters.map((character) => (
               <Card
                 key={character.id}
                 layout
-                initial={{ opacity: 0, scale: 0.9 }}
+                initial={{ opacity: 0, scale: 0.90 }}
                 animate={{ opacity: 1, scale: 1 }}
-                exit={{ opacity: 0, scale: 0.9 }}
-                transition={{ duration: 0.3 }}
+                exit={{ opacity: 0, scale: 0.85 }}
               >
-                {/* Status Indicator */}
-                <div 
-                  className="h-1.5" 
-                  style={{ backgroundColor: statusColors[character.status as keyof typeof statusColors] || '#9e9e9e' }}
-                ></div>
-                
-                <div className="p-5">
-                  <div className="flex items-start justify-between">
-                    <motion.h3 
-                      whileHover={{ color: '#d946ef' }}
-                      className="text-lg font-bold text-purple-100 mb-1"
-                    >
-                      {character.name}
-                    </motion.h3>
-                    <span 
-                      className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium"
-                      style={{ 
-                        backgroundColor: alpha(statusColors[character.status as keyof typeof statusColors] || '#9e9e9e', 0.2),
-                        color: statusColors[character.status as keyof typeof statusColors] || '#9e9e9e'
-                      }}
-                    >
-                      {t(`status.${character.status.toLowerCase()}`)}
-                    </span>
+                <div style={{ position: 'relative' }}>
+                  {/* Circular Status Badge */}
+                  <div
+                    style={{
+                      position: 'absolute',
+                      top: '10px',
+                      left: '10px',
+                      width: '60px',
+                      height: '60px',
+                      borderRadius: '50%',
+                      backgroundColor: statusColors[character.status as keyof typeof statusColors] || '#9e9e9e',
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      color: 'white',
+                      fontSize: '12px',
+                      fontWeight: 'bold',
+                    }}
+                  >
+                    {t(`status.${character.status.toLowerCase()}`)}
                   </div>
 
-                  <div className="mt-4 space-y-3">
-                    <div className="flex items-center text-sm text-purple-200">
-                      <PersonIcon fontSize="small" className="mr-2" />
-                      <span className="font-medium">{t('character.species')}:</span>
-                      <span className="ml-1">{character.species}</span>
-                    </div>
-                    <div className="flex items-center text-sm text-purple-200">
-                      <GenderIcon gender={character.gender} className="mr-2" />
-                      <span className="font-medium">{t('character.gender')}:</span>
-                      <span className="ml-1">{t(`gender.${character.gender.toLowerCase()}`)}</span>
-                    </div>
-                    <div className="flex items-center text-sm text-purple-200">
-                      <GlobeIcon fontSize="small" className="mr-2" />
-                      <span className="font-medium">{t('character.origin')}:</span>
-                      <span className="ml-1">{character.origin.name}</span>
+                  {/* Card Content */}
+                  <div style={{ paddingLeft: '80px', paddingTop: '10px' }}>
+                    <h3 className="text-lg font-bold mb-1">{character.name}</h3>
+                    <div className="space-y-1 text-sm">
+                      <div>
+                        <PersonIcon fontSize="small" className="mr-1" />
+                        {t('character.species')}: {character.species}
+                      </div>
+                      <div>
+                        <GenderIcon gender={character.gender} />
+                        {t('character.gender')}: {t(`gender.${character.gender.toLowerCase()}`)}
+                      </div>
+                      <div>
+                        <GlobeIcon fontSize="small" className="mr-1" />
+                        {t('character.origin')}: {character.origin.name}
+                      </div>
                     </div>
                   </div>
                 </div>
               </Card>
             ))}
           </AnimatePresence>
-        </div>
+        </CardsGrid>
 
-        {/* Infinite Scroll Loader */}
+        {/* Infinite scroll loading */}
         <div ref={ref} className="mt-8">
           {loading && (
-            <div className="flex justify-center">
-              <motion.div
-                animate={{ rotate: 360 }}
-                transition={{ duration: 1, repeat: Infinity, ease: "linear" }}
-                className="h-12 w-12 rounded-full border-t-2 border-b-2 border-purple-500"
-              ></motion.div>
+            <div className="flex justify-center animate-pulse">
+              <div className="text-purple-300">{t('loading')}</div>
             </div>
           )}
         </div>
