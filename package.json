@@ -1,0 +1,11 @@
+{
+  "dependencies": {
+    "@apollo/client": "^3.13.6",
+    "@tanstack/react-query": "^5.72.0",
+    "@tanstack/react-query-devtools": "^5.72.0",
+    "graphql": "^16.10.0",
+    "i18next": "^24.2.3",
+    "react-i18next": "^15.4.1",
+    "react-intersection-observer": "^9.16.0"
+  }
+}
