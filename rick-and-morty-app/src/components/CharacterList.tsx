@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useMemo, memo, useCallback } from 'react';
+import { useState, useEffect, useMemo, memo, useCallback } from 'react';
 import { useQuery } from '@apollo/client';
 import { useInView } from 'react-intersection-observer';
 import { GET_CHARACTERS } from '../queries/characters';
@@ -38,7 +38,7 @@ const CardsGrid = styled('div')({
   gridTemplateColumns: 'repeat(auto-fill, minmax(350px, 1fr))',
   gap: '2.7rem',
   padding: '1.5rem',
-  width: '100%',              // Ensure it takes full width
+  width: '100%',         
 });
 
 const Card = styled(motion.div)({
@@ -221,9 +221,10 @@ export default function CharacterList() {
   return (
     <GradientBackground>
       <div className="max-w-7xl mx-auto">
-            <div style={{ position: 'absolute', top: '1rem', right: '1rem' }}>
-            <LanguageSwitcher />
+            <div style={{ position: 'absolute', top: '2rem', right: '3.9rem' }}>
+              <LanguageSwitcher />
             </div>
+            <div style={{ marginBottom: '4rem' }}></div>
             <Header/>
 
         {/* Filters and Sorting */}
