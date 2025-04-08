@@ -1,4 +1,4 @@
-import { useState, useEffect, useMemo } from 'react';
+import { useState, useEffect, useMemo, memo, useCallback } from 'react';
 import { useQuery } from '@apollo/client';
 import { useInView } from 'react-intersection-observer';
 import { GET_CHARACTERS } from '../queries/characters';
@@ -64,8 +64,7 @@ const StyledButton = styled(Button)(({ variant }) => ({
   '&:hover': {
     backgroundColor: variant === 'contained' ? '#7b1fa2' : '#ce93d8',
     borderColor: '#ce93d8',
-  },
-  transition: 'all 0.3s ease',
+  }
 }));
 
 const statusColors = {
@@ -74,14 +73,72 @@ const statusColors = {
   unknown: '#9e9e9e',
 };
 
-const GenderIcon = ({ gender }: { gender: string }) => {
+const GenderIcon = memo(({ gender }: { gender: string }) => {
   switch (gender.toLowerCase()) {
     case 'female': return <FemaleIcon fontSize="small" />;
     case 'male': return <MaleIcon fontSize="small" />;
     case 'genderless': return <TransgenderIcon fontSize="small" />;
     default: return <UnknownIcon fontSize="small" />;
   }
-};
+});
+
+const StatusBadge = styled('div')(({ status }: { status: keyof typeof statusColors }) => ({
+  position: 'absolute',
+  top: '10px',
+  left: '10px',
+  width: '60px',
+  height: '60px',
+  borderRadius: '50%',
+  backgroundColor: statusColors[status],
+  display: 'flex',
+  alignItems: 'center',
+  justifyContent: 'center',
+  color: 'white',
+  fontSize: '12px',
+  fontWeight: 'bold',
+}));
+
+import { Character } from '../types'; // Ensure this type is defined in your types file
+
+const CardContent = memo(({ character }: { character: Character }) => {
+  const { t } = useTranslation();
+  
+  return (
+    <div style={{ position: 'relative' }}>
+      <StatusBadge status={character.status as keyof typeof statusColors}>
+        {t(`status.${character.status.toLowerCase()}`)}
+      </StatusBadge>
+      <div style={{ paddingLeft: '80px', paddingTop: '10px' }}>
+        <h3 className="text-lg font-bold mb-1">{character.name}</h3>
+        <div className="space-y-1 text-sm">
+          <div style={{ display: 'flex', alignItems: 'center' }}>
+            <PersonIcon fontSize="small" className="mr-1" />
+            <span>- {t('character.species')}: {character.species}</span>
+          </div>
+          <div style={{ display: 'flex', alignItems: 'center' }}>
+            <GenderIcon gender={character.gender} />
+            <span>- {t('character.gender')}: {t(`gender.${character.gender.toLowerCase()}`)}</span>
+          </div>
+          <div style={{ display: 'flex', alignItems: 'center' }}>
+            <GlobeIcon fontSize="small" className="mr-1" />
+            <span>- {t('character.origin')}: {character.origin.name}</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+});
+
+const CardComponent = memo(({ character }: { character: Character }) => (
+  <Card
+    layout
+    initial={{ opacity: 0, scale: 0.9 }}
+    animate={{ opacity: 1, scale: 1 }}
+    exit={{ opacity: 0 }}
+  >
+    <CardContent character={character} />
+  </Card>
+));
 
 export default function CharacterList() {
   const { t, i18n } = useTranslation();
@@ -92,11 +149,14 @@ export default function CharacterList() {
 
   const { loading, error, data, fetchMore } = useQuery<CharactersData, CharactersVars>(
     GET_CHARACTERS,
-    { variables: { page: 1, filter: filters }, notifyOnNetworkStatusChange: true }
+    { 
+      variables: { page: 1, filter: filters },
+      notifyOnNetworkStatusChange: true,
+    }
   );
 
-  useEffect(() => {
-    if (inView && data?.characters.info?.next) {
+  const handleFetchMore = useCallback(() => {
+    if (data?.characters.info?.next && !loading) {
       fetchMore({
         variables: { page: page + 1 },
         updateQuery: (prev, { fetchMoreResult }) => {
@@ -115,7 +175,11 @@ export default function CharacterList() {
       });
       setPage((prev) => prev + 1);
     }
-  }, [inView, data?.characters.info?.next, fetchMore, page]);
+  }, [data, loading, fetchMore, page]);
+
+  useEffect(() => {
+    if (inView) handleFetchMore();
+  }, [inView, handleFetchMore]);
 
   const sortedCharacters = useMemo(() => {
     return [...(data?.characters.results || [])].sort((a, b) =>
@@ -124,6 +188,15 @@ export default function CharacterList() {
         : a.origin.name.localeCompare(b.origin.name)
     );
   }, [data?.characters.results, sortBy]);
+
+  const handleFilterChange = useCallback((filterType: string, value: string) => {
+    setFilters(prev => ({ ...prev, [filterType]: value }));
+    setPage(1);
+  }, []);
+
+  const handleSortChange = useCallback((type: 'name' | 'origin') => {
+    setSortBy(type);
+  }, []);
 
   if (loading && !data) {
     return (
@@ -146,6 +219,7 @@ export default function CharacterList() {
   return (
     <GradientBackground>
       <div className="max-w-7xl mx-auto">
+        {/* Header and Language Selector */}
         <div className="relative mb-8 flex items-center justify-center flex-col">
           <div className="absolute top-4 right-4 flex items-center gap-2 bg-white/10 p-2 rounded-lg">
             <LanguageIcon className="text-purple-200" />
@@ -156,7 +230,6 @@ export default function CharacterList() {
             >
               <option value="en">English</option>
               <option value="de">Deutsch</option>
-              {/* <option value="es">Español</option> */}
             </select>
           </div>
 
@@ -173,6 +246,7 @@ export default function CharacterList() {
           </motion.div>
         </div>
 
+        {/* Filters and Sorting */}
         <Box
           sx={{
             display: 'flex',
@@ -189,10 +263,7 @@ export default function CharacterList() {
             <InputLabel sx={{ color: '#fff' }}>Status</InputLabel>
             <Select
               value={filters.status}
-              onChange={(e) => {
-                setFilters((prev) => ({ ...prev, status: e.target.value }));
-                setPage(1);
-              }}
+              onChange={(e) => handleFilterChange('status', e.target.value)}
               sx={{ color: '#fff', '& .MuiSvgIcon-root': { color: '#fff' } }}
             >
               <MenuItem value="">All</MenuItem>
@@ -206,10 +277,7 @@ export default function CharacterList() {
             <InputLabel sx={{ color: '#fff' }}>Species</InputLabel>
             <Select
               value={filters.species}
-              onChange={(e) => {
-                setFilters((prev) => ({ ...prev, species: e.target.value }));
-                setPage(1);
-              }}
+              onChange={(e) => handleFilterChange('species', e.target.value)}
               sx={{ color: '#fff', '& .MuiSvgIcon-root': { color: '#fff' } }}
             >
               <MenuItem value="">All</MenuItem>
@@ -221,13 +289,13 @@ export default function CharacterList() {
 
           <ButtonGroup>
             <StyledButton
-              onClick={() => setSortBy('name')}
+              onClick={() => handleSortChange('name')}
               variant={sortBy === 'name' ? 'contained' : 'outlined'}
             >
               Sort by Name
             </StyledButton>
             <StyledButton
-              onClick={() => setSortBy('origin')}
+              onClick={() => handleSortChange('origin')}
               variant={sortBy === 'origin' ? 'contained' : 'outlined'}
             >
               Sort by Origin
@@ -235,59 +303,16 @@ export default function CharacterList() {
           </ButtonGroup>
         </Box>
 
+        {/* Character Cards */}
         <CardsGrid>
           <AnimatePresence>
             {sortedCharacters.map((character) => (
-              <Card
-                key={character.id}
-                layout
-                initial={{ opacity: 0, scale: 0.90 }}
-                animate={{ opacity: 1, scale: 1 }}
-                exit={{ opacity: 0, scale: 0.85 }}
-              >
-                <div style={{ position: 'relative' }}>
-                  <div
-                  style={{
-                    position: 'absolute',
-                    top: '10px',
-                    left: '10px',
-                    width: '60px',
-                    height: '60px',
-                    borderRadius: '50%',
-                    backgroundColor: statusColors[character.status as keyof typeof statusColors],
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    color: 'white',
-                    fontSize: '12px',
-                    fontWeight: 'bold',
-                  }}
-                  >
-                  {t(`status.${character.status.toLowerCase()}`)}
-                  </div>
-                  <div style={{ paddingLeft: '80px', paddingTop: '10px' }}>
-                  <h3 className="text-lg font-bold mb-1">{character.name}</h3>
-                  <div className="space-y-1 text-sm">
-                    <div style={{ display: 'flex', alignItems: 'center' }}>
-                    <PersonIcon fontSize="small" className="mr-1" />
-                    <span>- {t('character.species')}: {character.species}</span>
-                    </div>
-                    <div style={{ display: 'flex', alignItems: 'center' }}>
-                    <GenderIcon gender={character.gender} />
-                    <span>- {t('character.gender')}: {t(`gender.${character.gender.toLowerCase()}`)}</span>
-                    </div>
-                    <div style={{ display: 'flex', alignItems: 'center' }}>
-                    <GlobeIcon fontSize="small" className="mr-1" />
-                    <span>- {t('character.origin')}: {character.origin.name}</span>
-                    </div>
-                  </div>
-                  </div>
-                </div>
-              </Card>
+              <CardComponent key={character.id} character={character} />
             ))}
           </AnimatePresence>
         </CardsGrid>
 
+        {/* Loading Trigger */}
         <div ref={ref} className="mt-8">
           {loading && (
             <div className="flex justify-center animate-pulse">
