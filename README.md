@@ -33,3 +33,7 @@ or
 yarn dev
 
 Open http://localhost:3000 in your browser.
+
+
+# ​​​​​​​​​🧑🏻‍💻​ You can see more about me at​​:  ​​​​⬇️​
+### ​​​​ https://filipkuzmanoski.vercel.app/
