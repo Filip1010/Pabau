@@ -24,6 +24,7 @@ import {
 import { motion, AnimatePresence } from 'framer-motion';
 import { alpha, styled } from '@mui/system';
 import { useTranslation } from 'react-i18next';
+import i18n from '../i18n'; // Import your i18n configuration
 
 const GradientBackground = styled('div')({
   background: 'linear-gradient(90deg, rgba(2,0,36,1) 0%, rgba(97,29,158,1) 100%)',
@@ -143,11 +144,18 @@ const CardComponent = memo(({ character }: { character: Character }) => (
 ));
 
 export default function CharacterList() {
-  const { t } = useTranslation();
+  const { t, ready } = useTranslation();
   const [filters, setFilters] = useState({ status: '', species: '' });
   const [sortBy, setSortBy] = useState<'name' | 'origin'>('name');
   const [page, setPage] = useState(1);
   const [ref, inView] = useInView();
+
+  // Set default language to English on initial load
+  useEffect(() => {
+    if (!localStorage.getItem('i18nextLng')) {
+      i18n.changeLanguage('en');
+    }
+  }, []);
 
   const { loading, error, data, fetchMore } = useQuery<CharactersData, CharactersVars>(
     GET_CHARACTERS,
@@ -200,6 +208,15 @@ export default function CharacterList() {
     setSortBy(type);
   }, []);
 
+  // Show loading state while translations are loading
+  if (!ready) {
+    return (
+      <GradientBackground className="flex items-center justify-center">
+        <div className="text-purple-200 animate-pulse">{t('loading')}</div>
+      </GradientBackground>
+    );
+  }
+
   if (loading && !data) {
     return (
       <GradientBackground className="flex items-center justify-center">
@@ -221,11 +238,11 @@ export default function CharacterList() {
   return (
     <GradientBackground>
       <div className="max-w-7xl mx-auto">
-            <div style={{ position: 'absolute', top: '2rem', right: '3.9rem' }}>
-              <LanguageSwitcher />
-            </div>
-            <div style={{ marginBottom: '4rem' }}></div>
-            <Header/>
+        <div style={{ position: 'absolute', top: '2rem', right: '3.9rem' }}>
+          <LanguageSwitcher />
+        </div>
+        <div style={{ marginBottom: '4rem' }}></div>
+        <Header/>
 
         {/* Filters and Sorting */}
         <Box
@@ -240,34 +257,33 @@ export default function CharacterList() {
             color: '#fff',
           }}
         >
-         <FormControl variant="filled" size="small" sx={{ minWidth: 100, backgroundColor: alpha('#fff', 0.1) }}>
-          <InputLabel sx={{ color: '#fff' }}>{t('filters.status')}</InputLabel>
-          <Select
-            value={filters.status}
-            onChange={(e) => handleFilterChange('status', e.target.value)}
-            sx={{ color: '#fff', '& .MuiSvgIcon-root': { color: '#fff' } }}
-          >
-            <MenuItem value="">{t('all')}</MenuItem>
-            <MenuItem value="Alive">{t('status.alive')}</MenuItem>
-            <MenuItem value="Dead">{t('status.dead')}</MenuItem>
-            <MenuItem value="unknown">{t('status.unknown')}</MenuItem>
-          </Select>
-        </FormControl>
+          <FormControl variant="filled" size="small" sx={{ minWidth: 100, backgroundColor: alpha('#fff', 0.1) }}>
+            <InputLabel sx={{ color: '#fff' }}>{t('filters.status')}</InputLabel>
+            <Select
+              value={filters.status}
+              onChange={(e) => handleFilterChange('status', e.target.value)}
+              sx={{ color: '#fff', '& .MuiSvgIcon-root': { color: '#fff' } }}
+            >
+              <MenuItem value="">{t('all')}</MenuItem>
+              <MenuItem value="Alive">{t('status.alive')}</MenuItem>
+              <MenuItem value="Dead">{t('status.dead')}</MenuItem>
+              <MenuItem value="unknown">{t('status.unknown')}</MenuItem>
+            </Select>
+          </FormControl>
 
-        <FormControl variant="filled" size="small" sx={{ minWidth: 120, backgroundColor: alpha('#fff', 0.1) }}>
-          <InputLabel sx={{ color: '#fff' }}>{t('character.species')}</InputLabel>
-          <Select
-            value={filters.species}
-            onChange={(e) => handleFilterChange('species', e.target.value)}
-            sx={{ color: '#fff', '& .MuiSvgIcon-root': { color: '#fff' } }}
-          >
-            <MenuItem value="">{t('all')}</MenuItem>
-            <MenuItem value="Human">{t('filters.human')}</MenuItem>
-            <MenuItem value="Alien">{t('filters.alien')}</MenuItem>
-            <MenuItem value="Robot">{t('filters.robot')}</MenuItem>
-          </Select>
-        </FormControl>
-
+          <FormControl variant="filled" size="small" sx={{ minWidth: 120, backgroundColor: alpha('#fff', 0.1) }}>
+            <InputLabel sx={{ color: '#fff' }}>{t('filters.species')}</InputLabel>
+            <Select
+              value={filters.species}
+              onChange={(e) => handleFilterChange('species', e.target.value)}
+              sx={{ color: '#fff', '& .MuiSvgIcon-root': { color: '#fff' } }}
+            >
+              <MenuItem value="">{t('all')}</MenuItem>
+              <MenuItem value="Human">{t('filters.human')}</MenuItem>
+              <MenuItem value="Alien">{t('filters.alien')}</MenuItem>
+              <MenuItem value="Robot">{t('filters.robot')}</MenuItem>
+            </Select>
+          </FormControl>
 
           <ButtonGroup>
             <StyledButton
