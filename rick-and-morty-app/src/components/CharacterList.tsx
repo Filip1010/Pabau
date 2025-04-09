@@ -240,45 +240,47 @@ export default function CharacterList() {
             color: '#fff',
           }}
         >
-          <FormControl variant="filled" size="small" sx={{ minWidth: 100, backgroundColor: alpha('#fff', 0.1) }}>
-            <InputLabel sx={{ color: '#fff' }}>Status</InputLabel>
-            <Select
-              value={filters.status}
-              onChange={(e) => handleFilterChange('status', e.target.value)}
-              sx={{ color: '#fff', '& .MuiSvgIcon-root': { color: '#fff' } }}
-            >
-              <MenuItem value="">All</MenuItem>
-              <MenuItem value="Alive">Alive</MenuItem>
-              <MenuItem value="Dead">Dead</MenuItem>
-              <MenuItem value="unknown">Unknown</MenuItem>
-            </Select>
-          </FormControl>
-           <FormControl variant="filled" size="small" sx={{ minWidth: 120, backgroundColor: alpha('#fff', 0.1) }}>
-            <InputLabel sx={{ color: '#fff' }}>Species</InputLabel>
-            <Select
-              value={filters.species}
-              onChange={(e) => handleFilterChange('species', e.target.value)}
-              sx={{ color: '#fff', '& .MuiSvgIcon-root': { color: '#fff' } }}
-            >
-              <MenuItem value="">All</MenuItem>
-              <MenuItem value="Human">Human</MenuItem>
-              <MenuItem value="Alien">Alien</MenuItem>
-              <MenuItem value="Robot">Robot</MenuItem>
-            </Select>
-          </FormControl>
+         <FormControl variant="filled" size="small" sx={{ minWidth: 100, backgroundColor: alpha('#fff', 0.1) }}>
+          <InputLabel sx={{ color: '#fff' }}>{t('filters.status')}</InputLabel>
+          <Select
+            value={filters.status}
+            onChange={(e) => handleFilterChange('status', e.target.value)}
+            sx={{ color: '#fff', '& .MuiSvgIcon-root': { color: '#fff' } }}
+          >
+            <MenuItem value="">{t('all')}</MenuItem>
+            <MenuItem value="Alive">{t('status.alive')}</MenuItem>
+            <MenuItem value="Dead">{t('status.dead')}</MenuItem>
+            <MenuItem value="unknown">{t('status.unknown')}</MenuItem>
+          </Select>
+        </FormControl>
+
+        <FormControl variant="filled" size="small" sx={{ minWidth: 120, backgroundColor: alpha('#fff', 0.1) }}>
+          <InputLabel sx={{ color: '#fff' }}>{t('character.species')}</InputLabel>
+          <Select
+            value={filters.species}
+            onChange={(e) => handleFilterChange('species', e.target.value)}
+            sx={{ color: '#fff', '& .MuiSvgIcon-root': { color: '#fff' } }}
+          >
+            <MenuItem value="">{t('all')}</MenuItem>
+            <MenuItem value="Human">{t('filters.human')}</MenuItem>
+            <MenuItem value="Alien">{t('filters.alien')}</MenuItem>
+            <MenuItem value="Robot">{t('filters.robot')}</MenuItem>
+          </Select>
+        </FormControl>
+
 
           <ButtonGroup>
             <StyledButton
               onClick={() => handleSortChange('name')}
               variant={sortBy === 'name' ? 'contained' : 'outlined'}
             >
-              Sort by Name
+              {t('sortByName')}
             </StyledButton>
             <StyledButton
               onClick={() => handleSortChange('origin')}
               variant={sortBy === 'origin' ? 'contained' : 'outlined'}
             >
-              Sort by Origin
+              {t('sortByOrigin')}
             </StyledButton>
           </ButtonGroup>
         </Box>

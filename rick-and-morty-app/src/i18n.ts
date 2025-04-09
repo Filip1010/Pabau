@@ -12,7 +12,10 @@ i18n.use(initReactI18next).init({
           status: 'Status',
           species: 'Species',
           allStatuses: 'All Statuses',
-          speciesPlaceholder: 'Human, Alien, etc.'
+          speciesPlaceholder: 'Human, Alien, etc.',
+          human : 'Human',
+          alien : 'Alien',
+          robot : 'Robot',
         },
         status: {
           alive: 'Alive',
@@ -52,7 +55,10 @@ i18n.use(initReactI18next).init({
           status: 'Status',
           species: 'Spezies',
           allStatuses: 'Alle Status',
-          speciesPlaceholder: 'Mensch, Alien, usw.'
+          speciesPlaceholder: 'Mensch, Alien, usw.' ,
+          human : 'Mensch',
+          alien : 'Ausländerin',
+          robot : 'Roboter',
         },
         status: {
           alive: 'Lebendig',
@@ -92,7 +98,10 @@ i18n.use(initReactI18next).init({
           status: 'Estado',
           species: 'Especie',
           allStatuses: 'Todos los estados',
-          speciesPlaceholder: 'Humano, Alienígena, etc.'
+          speciesPlaceholder: 'Humano, Alienígena, etc.',
+          human: 'Humano',
+          alien: 'Alienígena',
+          robot: 'Robot'
         },
         status: {
           alive: 'Vivo',
@@ -123,9 +132,7 @@ i18n.use(initReactI18next).init({
         all: 'Todos'
       }
     }
-  },
-  lng: 'en',
-  fallbackLng: 'en'
+  },    
 });
 
 export default i18n;
