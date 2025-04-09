@@ -88,8 +88,8 @@ const StatusBadge = styled('div')(({ status }: { status: keyof typeof statusColo
   position: 'absolute',
   top: '10px',
   left: '10px',
-  width: '60px',
-  height: '60px',
+  width: '70px',
+  height: '70px',
   borderRadius: '50%',
   backgroundColor: statusColors[status],
   display: 'flex',
@@ -111,20 +111,24 @@ const CardContent = memo(({ character }: { character: Character }) => {
       <StatusBadge status={character.status as keyof typeof statusColors}>
         {t(`status.${character.status.toLowerCase()}`)}
       </StatusBadge>
-      <div style={{ paddingLeft: '80px', paddingTop: '10px' }}>
+      <div style={{ 
+        paddingLeft: '90px', // Increased from 80px to accommodate larger badge
+        paddingTop: '10px',
+        minHeight: '80px' // Ensure consistent height for card content
+      }}>
         <h3 className="text-lg font-bold mb-1">{character.name}</h3>
         <div className="space-y-1 text-sm">
           <div style={{ display: 'flex', alignItems: 'center' }}>
             <PersonIcon fontSize="small" className="mr-1" />
-            <span>- {t('character.species')}: {character.species}</span>
+            <span> -  {t('character.species')}: {character.species}</span>
           </div>
           <div style={{ display: 'flex', alignItems: 'center' }}>
             <GenderIcon gender={character.gender} />
-            <span>- {t('character.gender')}: {t(`gender.${character.gender.toLowerCase()}`)}</span>
+            <span> -  {t('character.gender')}: {t(`gender.${character.gender.toLowerCase()}`)}</span>
           </div>
           <div style={{ display: 'flex', alignItems: 'center' }}>
             <GlobeIcon fontSize="small" className="mr-1" />
-            <span>- {t('character.origin')}: {character.origin.name}</span>
+            <span> -  {t('character.origin')}: {character.origin.name}</span>
           </div>
         </div>
       </div>
