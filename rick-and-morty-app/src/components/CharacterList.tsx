@@ -55,20 +55,27 @@ const Card = styled(motion.div)({
   border: '1px solid',
   borderColor: alpha('#9c27b0', 0.3),
   color: '#ffffff',
-  padding: '1rem',
-  width: '100%',
+  padding: '0.9rem',
+  width: '87%',
+  maxWidth: '100%', // Makes it flexible
+  boxSizing: 'border-box',
   transition: 'all 0.3s ease',
   fontFamily: '"Roboto Mono", monospace',
+  margin: '1rem 0', // Top and bottom spacing
   '&:hover': {
     transform: 'scale(1.03)',
     boxShadow: '0 8px 20px rgba(156, 39, 176, 0.3)',
     borderColor: alpha('#9c27b0', 0.6),
   },
-  '@media (max-width: 480px)': {
+  '@media (max-width: 768px)': {
     padding: '0.8rem',
-    margin: '0 0.5rem' // Added margin for mobile
-  }
+  },
+  '@media (max-width: 480px)': {
+    padding: '0.7rem',
+    margin: '1rem 0.5rem', // Avoids touching screen edges
+  },
 });
+
 
 const StyledButton = styled(Button)(({ variant }) => ({
   backgroundColor: variant === 'contained' ? '#9c27b0' : 'transparent',

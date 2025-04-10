@@ -1,4 +1,3 @@
-// components/Footer.tsx
 import { Box, Typography, Select, MenuItem } from '@mui/material';
 import { styled } from '@mui/system';
 import i18n from '../i18n';
@@ -21,22 +20,24 @@ const FooterContainer = styled('footer')({
 
 const FooterContent = styled(Box)({
   display: 'grid',
-  gridTemplateColumns: '1fr auto 1fr', // Three-column layout
+  gridTemplateColumns: '1fr auto 1fr',
+  gridTemplateAreas: `"left center right"`,
   width: '100%',
   maxWidth: '1200px',
   alignItems: 'center',
 });
 
 const CenteredContent = styled(Box)({
-  gridColumn: 2, // Middle column
+  gridArea: 'center',
   display: 'flex',
   justifyContent: 'center',
 });
 
 const RightContent = styled(Box)({
-  gridColumn: 3, // Right column
+  gridArea: 'right',
   display: 'flex',
   justifyContent: 'flex-end',
+  alignItems: 'center',
 });
 
 const CopyrightText = styled(Typography)({
@@ -79,15 +80,15 @@ const Footer = () => {
   return (
     <FooterContainer>
       <FooterContent>
-        {/* Empty left column */}
-        <div></div>
-        
+        {/* Empty left column (if needed, add gridArea: 'left') */}
+        <Box style={{ gridArea: 'left' }}></Box>
+
         <CenteredContent>
           <CopyrightText variant="body2">
             © {currentYear} Rick and Morty Universe
           </CopyrightText>
         </CenteredContent>
-        
+
         <RightContent>
           <LanguageSelect
             value={i18n.language}
@@ -104,8 +105,8 @@ const Footer = () => {
             }}
           >
             {languages.map((lang) => (
-              <MenuItem 
-                key={lang.code} 
+              <MenuItem
+                key={lang.code}
                 value={lang.code}
                 sx={{ fontSize: '0.75rem' }}
               >
