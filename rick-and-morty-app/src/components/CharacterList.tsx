@@ -56,12 +56,12 @@ const Card = styled(motion.div)({
   borderColor: alpha('#9c27b0', 0.3),
   color: '#ffffff',
   padding: '0.9rem',
-  width: '87%',
-  maxWidth: '100%', // Makes it flexible
+  width: '86%',
+  maxWidth: '100%', 
   boxSizing: 'border-box',
   transition: 'all 0.3s ease',
   fontFamily: '"Roboto Mono", monospace',
-  margin: '1rem 0', // Top and bottom spacing
+  margin: '1rem 0', 
   '&:hover': {
     transform: 'scale(1.03)',
     boxShadow: '0 8px 20px rgba(156, 39, 176, 0.3)',
@@ -110,10 +110,10 @@ const GenderIcon = memo(({ gender }: { gender: string }) => {
 
 const StatusBadge = styled('div')(({ status }: { status: keyof typeof statusColors }) => ({
   position: 'absolute',
-  top: '10px',
-  left: '10px',
-  width: '60px',
-  height: '60px',
+  top: '5px',
+  left: '5px',
+  width: '70px',
+  height: '70px',
   borderRadius: '50%',
   backgroundColor: statusColors[status],
   display: 'flex',
@@ -144,10 +144,10 @@ const CardContent = memo(({ character }: { character: Character }) => {
         paddingLeft: '80px',
         paddingTop: '8px',
         minHeight: '70px',
-        '@media (max-width: 480px)': {
-          paddingLeft: '60px',
-          minHeight: '60px'
-        }
+        // '@media (max-width: 480px)': {
+        //   paddingLeft: '60px',
+        //   minHeight: '60px'
+        // }
       }}>
         <h3 style={{ 
           fontSize: '1.1rem',
@@ -157,10 +157,10 @@ const CardContent = memo(({ character }: { character: Character }) => {
           whiteSpace: 'nowrap',
           overflow: 'hidden',
           textOverflow: 'ellipsis',
-          '@media (max-width: 480px)': {
-            fontSize: '1rem',
-            marginBottom: '0.6rem'
-          }
+          // '@media (max-width: 480px)': {
+          //   fontSize: '1rem',
+          //   marginBottom: '0.6rem'
+          // }
         }}>
           {character.name}
         </h3>
@@ -170,10 +170,10 @@ const CardContent = memo(({ character }: { character: Character }) => {
           alignItems: 'center',
           gap: '0.5rem 0.3rem',
           fontSize: '0.9rem',
-          '@media (max-width: 480px)': {
-            fontSize: '0.8rem',
-            gap: '0.4rem 0.2rem'
-          }
+          // '@media (max-width: 480px)': {
+          //   fontSize: '0.8rem',
+          //   gap: '0.4rem 0.2rem'
+          // }
         }}>
           <PersonIcon fontSize="small" style={{ minWidth: '24px' }} />
           <span>{t('character.species')}: {character.species}</span>
