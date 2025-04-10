@@ -4,6 +4,7 @@ import { useInView } from 'react-intersection-observer';
 import { GET_CHARACTERS } from '../queries/characters';
 import { CharactersData, CharactersVars } from '../types';
 import Header from './Header';
+import Footer from './Footer'; // Import the Footer component
 import {
   Person as PersonIcon,
   Female as FemaleIcon,
@@ -22,7 +23,7 @@ import {
   Box,
 } from '@mui/material';
 import { motion, AnimatePresence } from 'framer-motion';
-import { alpha, styled } from '@mui/system';
+import { alpha , styled } from '@mui/system';
 import { useTranslation } from 'react-i18next';
 import i18n from '../i18n'; // Import your i18n configuration
 
@@ -101,7 +102,7 @@ const StatusBadge = styled('div')(({ status }: { status: keyof typeof statusColo
 }));
 
 import { Character } from '../types'; 
-import LanguageSwitcher from './LanguageSwitcher';
+// import LanguageSwitcher from './LanguageSwitcher';
 
 const CardContent = memo(({ character }: { character: Character }) => {
   const { t } = useTranslation();
@@ -241,18 +242,14 @@ export default function CharacterList() {
 
   return (
     <GradientBackground>
-      <div className="max-w-7xl mx-auto">
-        <div style={{ position: 'absolute', top: '2rem', right: '3.9rem' }}>
-          <LanguageSwitcher />
-        </div>
-        <div style={{ marginBottom: '4rem' }}></div>
+      <div className="max-w-7xl mx-auto" style={{ paddingBottom: '60px' }}>
         <Header/>
 
         {/* Filters and Sorting */}
         <Box
           sx={{
             display: 'flex',
-            justifyContent: 'left',
+            justifyContent: 'center',
             alignItems: 'center',
             gap: '1.0rem',
             flexWrap: 'wrap',
@@ -323,6 +320,9 @@ export default function CharacterList() {
           )}
         </div>
       </div>
+      <div style={{ paddingBottom: '60px' }}>
+        <Footer />
+    </div>
     </GradientBackground>
   );
 }
