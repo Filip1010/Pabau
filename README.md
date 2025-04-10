@@ -4,11 +4,10 @@ A fully responsive React + TypeScript application that displays characters from 
 <br>
 
 
-### 💻​DESKTOP VERSION
+### 💻​UI
 ![VDesktop](https://github.com/user-attachments/assets/299779c7-b493-41f5-bf41-a57beaab6988) <br>
 
-### 📱​MOBILE VERSION
-![VMobile](https://github.com/user-attachments/assets/770363ee-1c0a-4492-8e83-488ea142721c) <br>
+
 
 
 ## ⚙️ Getting Started
