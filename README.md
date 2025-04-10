@@ -1,6 +1,4 @@
 # Rick and Morty Characters Explorer ​✅​ <br>
-
-A fully responsive React + TypeScript application that displays characters from the Rick and Morty GraphQL API using Apollo Client. Users can filter, sort, and infinitely scroll through characters with live language switching between English German and Spanish. 
 <br>
 
 
