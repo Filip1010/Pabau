@@ -2,9 +2,9 @@ import { useState, useEffect, useMemo, memo, useCallback } from 'react';
 import { useQuery } from '@apollo/client';
 import { useInView } from 'react-intersection-observer';
 import { GET_CHARACTERS } from '../queries/characters';
-import { CharactersData, CharactersVars } from '../types';
+import { Character, CharactersData, CharactersVars } from '../types';
 import Header from './Header';
-import Footer from './Footer'; // Import the Footer component
+import Footer from './Footer';
 import {
   Person as PersonIcon,
   Female as FemaleIcon,
@@ -23,24 +23,29 @@ import {
   Box,
 } from '@mui/material';
 import { motion, AnimatePresence } from 'framer-motion';
-import { alpha , styled } from '@mui/system';
+import { alpha, styled } from '@mui/system';
 import { useTranslation } from 'react-i18next';
-import i18n from '../i18n'; // Import your i18n configuration
+import i18n from '../i18n';
 
 const GradientBackground = styled('div')({
   background: 'linear-gradient(90deg, rgba(2,0,36,1) 0%, rgba(97,29,158,1) 100%)',
   minHeight: '100vh',
-  padding: '2rem',
+  padding: '1rem',
   color: '#ffffff',
   position: 'relative',
 });
 
 const CardsGrid = styled('div')({
   display: 'grid',
-  gridTemplateColumns: 'repeat(auto-fill, minmax(350px, 1fr))',
-  gap: '2.7rem',
-  padding: '1.5rem',
-  width: '100%',         
+  gridTemplateColumns: 'repeat(auto-fill, minmax(300px, 1fr))',
+  gap: '1.5rem',
+  padding: '1rem',
+  width: '100%',
+  '@media (max-width: 600px)': {
+    gridTemplateColumns: '1fr',
+    gap: '1rem',
+    padding: '0.5rem'
+  }
 });
 
 const Card = styled(motion.div)({
@@ -53,20 +58,31 @@ const Card = styled(motion.div)({
   padding: '1rem',
   width: '100%',
   transition: 'all 0.3s ease',
+  fontFamily: '"Roboto Mono", monospace',
   '&:hover': {
     transform: 'scale(1.03)',
     boxShadow: '0 8px 20px rgba(156, 39, 176, 0.3)',
     borderColor: alpha('#9c27b0', 0.6),
   },
+  '@media (max-width: 480px)': {
+    padding: '0.8rem',
+    margin: '0 0.5rem' // Added margin for mobile
+  }
 });
 
 const StyledButton = styled(Button)(({ variant }) => ({
   backgroundColor: variant === 'contained' ? '#9c27b0' : 'transparent',
   color: '#ffffff',
   borderColor: '#ce93d8',
+  fontFamily: '"Roboto Mono", monospace',
   '&:hover': {
     backgroundColor: variant === 'contained' ? '#7b1fa2' : '#ce93d8',
     borderColor: '#ce93d8',
+  },
+  '@media (max-width: 480px)': {
+    fontSize: '0.8rem',
+    padding: '6px 12px',
+    width: '100%'
   }
 }));
 
@@ -89,20 +105,25 @@ const StatusBadge = styled('div')(({ status }: { status: keyof typeof statusColo
   position: 'absolute',
   top: '10px',
   left: '10px',
-  width: '70px',
-  height: '70px',
+  width: '60px',
+  height: '60px',
   borderRadius: '50%',
   backgroundColor: statusColors[status],
   display: 'flex',
   alignItems: 'center',
   justifyContent: 'center',
   color: 'white',
-  fontSize: '12px',
+  fontSize: '10px',
   fontWeight: 'bold',
+  fontFamily: '"Roboto Mono", monospace',
+  '@media (max-width: 480px)': {
+    width: '45px',
+    height: '45px',
+    fontSize: '8px',
+    top: '8px',
+    left: '8px'
+  }
 }));
-
-import { Character } from '../types'; 
-// import LanguageSwitcher from './LanguageSwitcher';
 
 const CardContent = memo(({ character }: { character: Character }) => {
   const { t } = useTranslation();
@@ -113,24 +134,48 @@ const CardContent = memo(({ character }: { character: Character }) => {
         {t(`status.${character.status.toLowerCase()}`)}
       </StatusBadge>
       <div style={{ 
-        paddingLeft: '90px', // Increased from 80px to accommodate larger badge
-        paddingTop: '10px',
-        minHeight: '80px' // Ensure consistent height for card content
+        paddingLeft: '80px',
+        paddingTop: '8px',
+        minHeight: '70px',
+        '@media (max-width: 480px)': {
+          paddingLeft: '60px',
+          minHeight: '60px'
+        }
       }}>
-        <h3 className="text-lg font-bold mb-1">{character.name}</h3>
-        <div className="space-y-1 text-sm">
-          <div style={{ display: 'flex', alignItems: 'center' }}>
-            <PersonIcon fontSize="small" className="mr-1" />
-            <span> -  {t('character.species')}: {character.species}</span>
-          </div>
-          <div style={{ display: 'flex', alignItems: 'center' }}>
-            <GenderIcon gender={character.gender} />
-            <span> -  {t('character.gender')}: {t(`gender.${character.gender.toLowerCase()}`)}</span>
-          </div>
-          <div style={{ display: 'flex', alignItems: 'center' }}>
-            <GlobeIcon fontSize="small" className="mr-1" />
-            <span> -  {t('character.origin')}: {character.origin.name}</span>
-          </div>
+        <h3 style={{ 
+          fontSize: '1.1rem',
+          fontWeight: 'bold',
+          marginBottom: '0.8rem',
+          fontFamily: '"Roboto Mono", monospace',
+          whiteSpace: 'nowrap',
+          overflow: 'hidden',
+          textOverflow: 'ellipsis',
+          '@media (max-width: 480px)': {
+            fontSize: '1rem',
+            marginBottom: '0.6rem'
+          }
+        }}>
+          {character.name}
+        </h3>
+        <div style={{ 
+          display: 'grid',
+          gridTemplateColumns: 'auto 1fr',
+          alignItems: 'center',
+          gap: '0.5rem 0.3rem',
+          fontSize: '0.9rem',
+          '@media (max-width: 480px)': {
+            fontSize: '0.8rem',
+            gap: '0.4rem 0.2rem'
+          }
+        }}>
+          <PersonIcon fontSize="small" style={{ minWidth: '24px' }} />
+          <span>{t('character.species')}: {character.species}</span>
+          
+          <GenderIcon gender={character.gender} />
+          <span>{t('character.gender')}: {t(`gender.${character.gender.toLowerCase()}`)}</span>
+          
+          <GlobeIcon fontSize="small" style={{ minWidth: '24px' }} />
+          <span>{t('character.origin')}: {character.origin.name}</span>
         </div>
       </div>
     </div>
@@ -155,7 +200,6 @@ export default function CharacterList() {
   const [page, setPage] = useState(1);
   const [ref, inView] = useInView();
 
-  // Set default language to English on initial load
   useEffect(() => {
     if (!localStorage.getItem('i18nextLng')) {
       i18n.changeLanguage('en');
@@ -213,16 +257,7 @@ export default function CharacterList() {
     setSortBy(type);
   }, []);
 
-  // Show loading state while translations are loading
-  if (!ready) {
-    return (
-      <GradientBackground className="flex items-center justify-center">
-        <div className="text-purple-200 animate-pulse">{t('loading')}</div>
-      </GradientBackground>
-    );
-  }
-
-  if (loading && !data) {
+  if (!ready || (loading && !data)) {
     return (
       <GradientBackground className="flex items-center justify-center">
         <div className="text-purple-200 animate-pulse">{t('loading')}</div>
@@ -241,88 +276,136 @@ export default function CharacterList() {
   }
 
   return (
-    <GradientBackground>
-      <div className="max-w-7xl mx-auto" style={{ paddingBottom: '60px' }}>
-        <Header/>
+    <>
+      <style>{`
+        @import url('https://fonts.googleapis.com/css2?family=Roboto+Mono:wght@400;500;700&display=swap');
+      `}</style>
+      
+      <GradientBackground>
+        <div className="max-w-7xl mx-auto" style={{ paddingBottom: '60px' }}>
+          <Header/>
 
-        {/* Filters and Sorting */}
-        <Box
-          sx={{
-            display: 'flex',
-            justifyContent: 'center',
-            alignItems: 'center',
-            gap: '1.0rem',
-            flexWrap: 'wrap',
-            marginBottom: '0.3rem',
-            padding: '1.8rem',
-            color: '#fff',
-          }}
-        >
-          <FormControl variant="filled" size="small" sx={{ minWidth: 100, backgroundColor: alpha('#fff', 0.1) }}>
-            <InputLabel sx={{ color: '#fff' }}>{t('filters.status')}</InputLabel>
-            <Select
-              value={filters.status}
-              onChange={(e) => handleFilterChange('status', e.target.value)}
-              sx={{ color: '#fff', '& .MuiSvgIcon-root': { color: '#fff' } }}
-            >
-              <MenuItem value="">{t('all')}</MenuItem>
-              <MenuItem value="Alive">{t('status.alive')}</MenuItem>
-              <MenuItem value="Dead">{t('status.dead')}</MenuItem>
-              <MenuItem value="unknown">{t('status.unknown')}</MenuItem>
-            </Select>
-          </FormControl>
+          <Box
+            sx={{
+              display: 'flex',
+              justifyContent: 'center',
+              alignItems: 'center',
+              gap: '1.0rem',
+              flexWrap: 'wrap',
+              marginBottom: '0.4rem',
+              padding: '1rem',
+              color: '#fff',
+              '@media (max-width: 480px)': {
+                flexDirection: 'column',
+                gap: '0.8rem',
+                padding: '0.8rem 0.5rem'
+              }
+            }}
+          >
+            <FormControl variant="filled" size="small" sx={{ 
+              minWidth: 100, 
+              backgroundColor: alpha('#fff', 0.1),
+              '@media (max-width: 480px)': {
+                width: '100%'
+              }
+            }}>
+              <InputLabel sx={{ color: '#fff', fontFamily: '"Roboto Mono", monospace' }}>
+                {t('filters.status')}
+              </InputLabel>
+              <Select
+                value={filters.status}
+                onChange={(e) => handleFilterChange('status', e.target.value)}
+                sx={{ 
+                  color: '#fff', 
+                  '& .MuiSvgIcon-root': { color: '#fff' },
+                  fontFamily: '"Roboto Mono", monospace'
+                }}
+              >
+                {['', 'Alive', 'Dead', 'unknown'].map((status) => (
+                  <MenuItem 
+                    key={status || 'all'} 
+                    value={status}
+                    sx={{ fontFamily: '"Roboto Mono", monospace' }}
+                  >
+                    {status ? t(`status.${status.toLowerCase()}`) : t('all')}
+                  </MenuItem>
+                ))}
+              </Select>
+            </FormControl>
 
-          <FormControl variant="filled" size="small" sx={{ minWidth: 120, backgroundColor: alpha('#fff', 0.1) }}>
-            <InputLabel sx={{ color: '#fff' }}>{t('filters.species')}</InputLabel>
-            <Select
-              value={filters.species}
-              onChange={(e) => handleFilterChange('species', e.target.value)}
-              sx={{ color: '#fff', '& .MuiSvgIcon-root': { color: '#fff' } }}
-            >
-              <MenuItem value="">{t('all')}</MenuItem>
-              <MenuItem value="Human">{t('filters.human')}</MenuItem>
-              <MenuItem value="Alien">{t('filters.alien')}</MenuItem>
-              <MenuItem value="Robot">{t('filters.robot')}</MenuItem>
-            </Select>
-          </FormControl>
+            <FormControl variant="filled" size="small" sx={{ 
+              minWidth: 120, 
+              backgroundColor: alpha('#fff', 0.1),
+              '@media (max-width: 480px)': {
+                width: '100%'
+              }
+            }}>
+              <InputLabel sx={{ color: '#fff', fontFamily: '"Roboto Mono", monospace' }}>
+                {t('filters.species')}
+              </InputLabel>
+              <Select
+                value={filters.species}
+                onChange={(e) => handleFilterChange('species', e.target.value)}
+                sx={{ 
+                  color: '#fff', 
+                  '& .MuiSvgIcon-root': { color: '#fff' },
+                  fontFamily: '"Roboto Mono", monospace'
+                }}
+              >
+                {['', 'Human', 'Alien', 'Robot'].map((species) => (
+                  <MenuItem 
+                    key={species || 'all'} 
+                    value={species}
+                    sx={{ fontFamily: '"Roboto Mono", monospace' }}
+                  >
+                    {species ? t(`filters.${species.toLowerCase()}`) : t('all')}
+                  </MenuItem>
+                ))}
+              </Select>
+            </FormControl>
 
-          <ButtonGroup>
-            <StyledButton
-              onClick={() => handleSortChange('name')}
-              variant={sortBy === 'name' ? 'contained' : 'outlined'}
-            >
-              {t('sortByName')}
-            </StyledButton>
-            <StyledButton
-              onClick={() => handleSortChange('origin')}
-              variant={sortBy === 'origin' ? 'contained' : 'outlined'}
-            >
-              {t('sortByOrigin')}
-            </StyledButton>
-          </ButtonGroup>
-        </Box>
+            <ButtonGroup sx={{
+              '@media (max-width: 480px)': {
+                width: '100%',
+                flexDirection: 'column',
+                gap: '0.5rem'
+              }
+            }}>
+              <StyledButton
+                onClick={() => handleSortChange('name')}
+                variant={sortBy === 'name' ? 'contained' : 'outlined'}
+              >
+                {t('sortByName')}
+              </StyledButton>
+              <StyledButton
+                onClick={() => handleSortChange('origin')}
+                variant={sortBy === 'origin' ? 'contained' : 'outlined'}
+              >
+                {t('sortByOrigin')}
+              </StyledButton>
+            </ButtonGroup>
+          </Box>
 
-        {/* Character Cards */}
-        <CardsGrid>
-          <AnimatePresence>
-            {sortedCharacters.map((character) => (
-              <CardComponent key={character.id} character={character} />
-            ))}
-          </AnimatePresence>
-        </CardsGrid>
+          <CardsGrid>
+            <AnimatePresence>
+              {sortedCharacters.map((character) => (
+                <CardComponent key={character.id} character={character} />
+              ))}
+            </AnimatePresence>
+          </CardsGrid>
 
-        {/* Loading Trigger */}
-        <div ref={ref} className="mt-8">
-          {loading && (
-            <div className="flex justify-center animate-pulse">
-              <div className="text-purple-300">{t('loading')}</div>
-            </div>
-          )}
+          <div ref={ref} style={{ height: '20px', marginTop: '20px' }}>
+            {loading && (
+              <div className="flex justify-center animate-pulse">
+                <div className="text-purple-300" style={{ fontFamily: '"Roboto Mono", monospace' }}>
+                  {t('loading')}
+                </div>
+              </div>
+            )}
+          </div>
         </div>
-      </div>
-      <div style={{ paddingBottom: '60px' }}>
         <Footer />
-    </div>
-    </GradientBackground>
+      </GradientBackground>
+    </>
   );
 }
